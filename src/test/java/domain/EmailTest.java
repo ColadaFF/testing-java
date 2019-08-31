@@ -2,6 +2,7 @@ package domain;
 
 
 import org.junit.jupiter.api.DisplayName;
+
 import static org.junit.jupiter.api.DynamicTest.*;
 
 import org.junit.jupiter.api.DynamicTest;
@@ -25,7 +26,7 @@ public class EmailTest {
 
     @TestFactory
     @DisplayName("Todos deben fallar")
-    Stream<DynamicTest> should_be_rejected(){
+    Stream<DynamicTest> should_be_rejected() {
         return Stream.of(
                 null,
                 "null",
@@ -45,6 +46,13 @@ public class EmailTest {
                         Email.of(input);
                     });
                 }));
+    }
+
+
+    @TestFactory
+    @DisplayName("Deben fallar por tamaño")
+    Stream<DynamicTest> should_fail_by_length() {
+
     }
 
 }
