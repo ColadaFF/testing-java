@@ -1,6 +1,7 @@
 package domain;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 
 import static org.junit.jupiter.api.DynamicTest.*;
@@ -8,6 +9,7 @@ import static org.junit.jupiter.api.DynamicTest.*;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.stream.Stream;
 
@@ -41,18 +43,56 @@ public class EmailTest {
                 "e j e m p l o @ias. c o m . c o",
                 "13456789876543!·$%&/()"
         )
-                .map(input -> dynamicTest("Rechazado: " + input, () -> {
-                    assertThrows(RuntimeException.class, () -> {
-                        Email.of(input);
-                    });
-                }));
+                .map(input -> {
+
+                    String displayName = "Rechazado: " + input;
+                    Executable testBody = () -> {
+                        assertThrows(RuntimeException.class, () -> {
+                            Email.of(input);
+                        });
+                    };
+                    return dynamicTest(displayName, testBody);
+                });
     }
 
 
     @TestFactory
+    @DisplayName("Todos deben pasar")
+    Stream<DynamicTest> all_should_pass() {
+        return Stream.of(
+              "emerson@ias.com.co",
+                "gabriel@ias.com.co"
+        )
+                .map(input -> {
+
+                    String displayName = "Pasa: " + input;
+                    Executable testBody = () -> {
+                        Email email = Email.of(input);
+                        assertNotNull(email);
+                        assertEquals(input.toLowerCase(), email.getValue());
+                    };
+                    return dynamicTest(displayName, testBody);
+                });
+    }
+
+    @TestFactory
     @DisplayName("Deben fallar por tamaño")
     Stream<DynamicTest> should_fail_by_length() {
+        return Stream.of(
+                "a@ias.com.co",
+                StringUtils.repeat("X", 90).concat("@ias.com.co")
 
+        )
+                .map(input -> {
+
+                    String displayName = "Rechazado: " + input;
+                    Executable testBody = () -> {
+                        assertThrows(RuntimeException.class, () -> {
+                            Email.of(input);
+                        });
+                    };
+                    return dynamicTest(displayName, testBody);
+                });
     }
 
 }
